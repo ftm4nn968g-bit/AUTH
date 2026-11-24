@@ -1,0 +1,34 @@
+# Build
+target/
+*.class
+*.jar
+!.mvn/wrapper/maven-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+
+# Құпия деректер (secrets) — репозиторийге ешқашан түспеуі керек
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.jks
+application-local.properties
+
+# Local database files
+data/
+*.db
+*.mv.db
+*.trace.db
+
+# Logs / OS
+logs/
+*.log
+.DS_Store
+Thumbs.db
