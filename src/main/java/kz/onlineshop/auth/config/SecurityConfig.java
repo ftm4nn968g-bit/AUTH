@@ -53,7 +53,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/register", "/login", "/css/**", "/img/**", "/error").permitAll()
+                .requestMatchers("/", "/register", "/login", "/css/**", "/js/**", "/img/**", "/error").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated())
             // Кіру формасын AuthController өзі өңдейді (UML-дегі тізбек бойынша)
