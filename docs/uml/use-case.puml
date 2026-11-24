@@ -1,0 +1,40 @@
+@startuml use-case
+!pragma layout smetana
+left to right direction
+skinparam shadowing false
+skinparam defaultFontName Arial
+title Онлайн дүкен жүйесі — прецеденттер диаграммасы
+
+actor "Сатып алушы" as Buyer
+actor "Әкімші" as Admin
+
+rectangle "Онлайн дүкен жүйесі" {
+  usecase "Тіркелу (Register)" as UC1
+  usecase "Жүйеге кіру (Login)" as UC2
+  usecase "Жүйеден шығу (Logout)" as UC3
+  usecase "Жеке кабинет және\nкіру тарихын көру" as UC4
+  usecase "Журналдарды көру (Logs)" as UC5
+  usecase "Қолданушыларды басқару\n(бұғаттан шығару, жою)" as UC6
+
+  usecase "Құпия сөз саясатын тексеру" as INC1
+  usecase "Парольді BCrypt арқылы хэштеу" as INC2
+  usecase "Brute-force-тан қорғау (5 рет қате)" as INC3
+  usecase "Парольді BCrypt арқылы тексеру" as INC4
+  usecase "Әрекетті журналға жазу" as INC5
+}
+
+Buyer --> UC1
+Buyer --> UC2
+Buyer --> UC3
+Buyer --> UC4
+Admin --> UC2
+Admin --> UC5
+Admin --> UC6
+
+UC1 ..> INC1 : <<include>>
+UC1 ..> INC2 : <<include>>
+UC1 ..> INC5 : <<include>>
+UC2 ..> INC3 : <<include>>
+UC2 ..> INC4 : <<include>>
+UC2 ..> INC5 : <<include>>
+@enduml

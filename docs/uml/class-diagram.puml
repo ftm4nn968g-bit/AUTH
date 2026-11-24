@@ -1,0 +1,121 @@
+@startuml class-diagram
+!pragma layout smetana
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam defaultFontName Arial
+title Онлайн дүкен: қауіпсіз тіркелу/кіру жүйесі — класс диаграммасы
+
+package "Controller (Сыртқы сұраныстар)" {
+  class AuthController {
+    -userService: UserService
+    -securityContextRepository: SecurityContextRepository
+    +register(form: RegisterForm): String
+    +login(form: LoginForm): String
+    +account(auth: Authentication): String
+    -signIn(user: User): void
+  }
+  class AdminController {
+    -userService: UserService
+    +dashboard(model: Model): String
+    +unlock(id: Long): String
+    +delete(id: Long): String
+  }
+}
+
+package "DTO (Формалар)" {
+  class RegisterForm {
+    -email: String
+    -password: String
+    -confirmPassword: String
+  }
+  class LoginForm {
+    -email: String
+    -password: String
+  }
+}
+
+package "Service (Бизнес-логика)" {
+  class UserService {
+    -passwordEncoder: BCryptPasswordEncoder
+    -maxAttempts: int = 5
+    -lockDuration: Duration = 15 мин
+    +register(email: String, password: String, ip: String): User
+    +login(email: String, password: String, ip: String): boolean
+    +checkBruteForce(user: User): void
+    +verifyPassword(password: String, hash: String): boolean
+    +unlockUser(id: Long): void
+    +deleteUser(id: Long, adminEmail: String): void
+    +getRecentAttempts(): List<LoginAttempt>
+  }
+  class PasswordPolicy <<utility>> {
+    +{static} validate(password: String, email: String): String
+  }
+  class AccountLockedException {
+    -lockedUntil: Instant
+  }
+  class RegistrationException
+}
+
+package "Repository (Дерекқормен жұмыс)" {
+  interface UserRepository {
+    +findByEmail(email: String): Optional<User>
+    +existsByEmail(email: String): boolean
+    +save(user: User): User
+  }
+  interface LoginAttemptRepository {
+    +findTop100ByOrderByCreatedAtDesc(): List<LoginAttempt>
+    +save(a: LoginAttempt): LoginAttempt
+  }
+}
+
+package "Model (Дерекқор)" {
+  class User {
+    -id: Long
+    -email: String
+    -password: String  <<BCrypt хэші>>
+    -role: Role
+    -failedAttempts: int
+    -lockedUntil: Instant
+    -createdAt: Instant
+    +isLocked(now: Instant): boolean
+  }
+  enum Role {
+    USER
+    ADMIN
+  }
+  class LoginAttempt {
+    -id: Long
+    -email: String
+    -ipAddress: String
+    -success: boolean
+    -result: String
+    -createdAt: Instant
+  }
+}
+
+package "Config (Қауіпсіздік баптаулары)" {
+  class SecurityConfig {
+    +passwordEncoder(): BCryptPasswordEncoder
+    +filterChain(http: HttpSecurity): SecurityFilterChain
+  }
+  class DataInitializer {
+    +run(): void
+  }
+}
+
+AuthController ..> UserService : шақырады
+AdminController ..> UserService : шақырады
+AuthController ..> RegisterForm
+AuthController ..> LoginForm
+UserService ..> UserRepository : пайдаланады
+UserService ..> LoginAttemptRepository : журналға жазады
+UserService ..> PasswordPolicy
+UserService ..> AccountLockedException : лақтырады
+UserService ..> RegistrationException : лақтырады
+UserService ..> SecurityConfig : BCrypt алады
+DataInitializer ..> UserRepository
+UserRepository ..> User
+LoginAttemptRepository ..> LoginAttempt
+User "*" --> "1" Role : рөлі
+@enduml

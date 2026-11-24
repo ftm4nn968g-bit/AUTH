@@ -1,0 +1,39 @@
+@startuml sequence-register
+skinparam shadowing false
+skinparam defaultFontName Arial
+title Тіркелу (Register) — тізбек диаграммасы
+
+actor User
+participant AuthController
+participant UserService
+participant PasswordPolicy
+participant BCryptPasswordEncoder
+participant UserRepository
+participant LoginAttemptRepository
+
+User -> AuthController : POST /register (email, password, confirmPassword, _csrf)
+AuthController -> AuthController : @Valid тексеру + құпия сөздер сәйкестігі
+alt Форма қате
+  AuthController --> User : 200 форма қателерімен
+else Форма дұрыс
+  AuthController -> UserService : register(email, password, ip)
+  UserService -> PasswordPolicy : validate(password, email)
+  alt Құпия сөз әлсіз
+    UserService --> AuthController : RegistrationException
+    AuthController --> User : 200 қате хабарламасы
+  else Құпия сөз мықты
+    UserService -> UserRepository : existsByEmail(email)
+    alt Email бос емес
+      UserService --> AuthController : RegistrationException
+      AuthController --> User : 200 "аккаунт бұрыннан бар"
+    else Email бос
+      UserService -> BCryptPasswordEncoder : encode(password)
+      BCryptPasswordEncoder --> UserService : $2a$12$... (тұз + хэш)
+      UserService -> UserRepository : save(User(email, hash, USER))
+      UserService -> LoginAttemptRepository : save(REGISTERED)
+      UserService --> AuthController : User
+      AuthController --> User : 302 → /login?registered
+    end
+  end
+end
+@enduml

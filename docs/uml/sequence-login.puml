@@ -1,0 +1,51 @@
+@startuml sequence-login
+skinparam shadowing false
+skinparam defaultFontName Arial
+title Жүйеге кіру (Login) — тізбек диаграммасы
+
+actor User
+participant AuthController
+participant UserService
+participant UserRepository
+participant LoginAttemptRepository
+
+User -> AuthController : POST /login (email, password, _csrf)
+AuthController -> UserService : login(email, password, ip)
+UserService -> UserRepository : findByEmail(email)
+UserRepository --> UserService : Optional<User>
+
+alt Пайдаланушы табылмады
+  UserService -> UserService : BCrypt dummy тексеру (timing attack қорғауы)
+  UserService -> LoginAttemptRepository : save(BAD_CREDENTIALS)
+  UserService --> AuthController : false
+  AuthController --> User : 401 "Email немесе құпия сөз қате"
+else Пайдаланушы бар
+  UserService -> UserService : checkBruteForce(user)
+  alt Аккаунт бұғатталған
+    UserService -> LoginAttemptRepository : save(ACCOUNT_LOCKED)
+    UserService --> AuthController : AccountLockedException
+    AuthController --> User : 401 "Аккаунт бұғатталды, 15 мин"
+  else Бұғатталмаған
+    UserService -> UserService : verifyPassword(password, hash)
+    alt Құпия сөз дұрыс
+      UserService -> UserRepository : save(failedAttempts = 0)
+      UserService -> LoginAttemptRepository : save(SUCCESS)
+      UserService --> AuthController : true
+      AuthController -> AuthController : signIn(user)\nсессия ID жаңарту (session fixation)
+      AuthController --> User : 302 → /account (USER) немесе /admin (ADMIN)
+    else Құпия сөз қате
+      UserService -> UserRepository : save(failedAttempts + 1)
+      alt failedAttempts >= 5
+        UserService -> UserRepository : save(lockedUntil = now + 15 мин)
+        UserService -> LoginAttemptRepository : save(LOCKED_NOW)
+        UserService --> AuthController : AccountLockedException
+        AuthController --> User : 401 "Аккаунт бұғатталды"
+      else
+        UserService -> LoginAttemptRepository : save(BAD_CREDENTIALS)
+        UserService --> AuthController : false
+        AuthController --> User : 401 "Email немесе құпия сөз қате"
+      end
+    end
+  end
+end
+@enduml
