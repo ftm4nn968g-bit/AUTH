@@ -33,6 +33,8 @@ Java 17+, Spring Boot 3.5, Spring Security 6, Spring Data JPA, Thymeleaf, H2 (ә
 
 Қажет: **JDK 17 немесе одан жоғары**. Maven орнатудың қажеті жоқ — жобада Maven Wrapper (`mvnw`) бар.
 
+**Windows-та ең оңай жолы:** `start.bat` файлын екі рет басыңыз — сервер іске қосылып, браузер өзі ашылады. Тоқтату үшін — `stop.bat`. Әкімші құпия сөзін `.env` файлына жазуға болады (`.env.example` үлгісін қараңыз).
+
 ```bash
 git clone <repo-url>
 cd TOGZHAN_AUTH
