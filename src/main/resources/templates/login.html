@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="kk" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Кіру')}"></head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+
+<main class="auth-wrap">
+    <div class="auth-card">
+        <h1>Жүйеге кіру</h1>
+        <p class="sub">Email мен құпия сөзіңізді енгізіңіз</p>
+
+        <div class="alert alert-ok" th:if="${param.registered}" role="status">Тіркелу сәтті өтті! Енді жүйеге кіріңіз.</div>
+        <div class="alert alert-info" th:if="${param.logout}" role="status">Сіз жүйеден шықтыңыз.</div>
+        <div th:if="${error}" th:class="${locked} ? 'alert alert-warn' : 'alert alert-error'" th:text="${error}" role="alert">Қате</div>
+
+        <form th:action="@{/login}" th:object="${form}" method="post" novalidate>
+            <div class="field">
+                <label for="email">Email</label>
+                <input id="email" type="email" th:field="*{email}" autocomplete="username" maxlength="254"
+                       th:classappend="${#fields.hasErrors('email')} ? 'invalid'" placeholder="name@mail.kz" required>
+                <div class="err" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+            </div>
+
+            <div class="field">
+                <label for="password">Құпия сөз</label>
+                <div class="input-wrap">
+                    <input id="password" type="password" th:field="*{password}" autocomplete="current-password" maxlength="128"
+                           th:classappend="${#fields.hasErrors('password')} ? 'invalid'" required>
+                    <button type="button" class="toggle-pass" data-toggle-pass="password">Көрсету</button>
+                </div>
+                <div class="err" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">Кіру</button>
+        </form>
+
+        <p class="auth-alt">Аккаунтыңыз жоқ па? <a th:href="@{/register}">Тіркелу</a></p>
+        <div th:replace="~{fragments :: security-note}"></div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+<script th:src="@{/js/password.js}"></script>
+</body>
+</html>

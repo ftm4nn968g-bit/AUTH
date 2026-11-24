@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="kk" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Тіркелу')}"></head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+
+<main class="auth-wrap">
+    <div class="auth-card">
+        <h1>Тіркелу</h1>
+        <p class="sub">Дүкенде сатып алу үшін аккаунт ашыңыз</p>
+
+        <div class="alert alert-error" th:if="${error}" th:text="${error}" role="alert">Қате</div>
+
+        <form th:action="@{/register}" th:object="${form}" method="post" novalidate>
+            <div class="field">
+                <label for="email">Email</label>
+                <input id="email" type="email" th:field="*{email}" autocomplete="email" maxlength="254"
+                       th:classappend="${#fields.hasErrors('email')} ? 'invalid'" placeholder="name@mail.kz" required>
+                <div class="err" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+            </div>
+
+            <div class="field">
+                <label for="password">Құпия сөз</label>
+                <div class="input-wrap">
+                    <input id="password" type="password" th:field="*{password}" autocomplete="new-password" maxlength="128"
+                           th:classappend="${#fields.hasErrors('password')} ? 'invalid'" required>
+                    <button type="button" class="toggle-pass" data-toggle-pass="password">Көрсету</button>
+                </div>
+                <div class="meter"><span></span></div>
+                <div class="meter-label">Кемінде 8 таңба, әріп және сан</div>
+                <div class="err" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+            </div>
+
+            <div class="field">
+                <label for="confirmPassword">Құпия сөзді қайталаңыз</label>
+                <input id="confirmPassword" type="password" th:field="*{confirmPassword}" autocomplete="new-password" maxlength="128"
+                       th:classappend="${#fields.hasErrors('confirmPassword')} ? 'invalid'" required>
+                <div class="err" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">Аккаунт ашу</button>
+        </form>
+
+        <p class="auth-alt">Аккаунтыңыз бар ма? <a th:href="@{/login}">Кіру</a></p>
+        <div th:replace="~{fragments :: security-note}"></div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+<script th:src="@{/js/password.js}"></script>
+</body>
+</html>

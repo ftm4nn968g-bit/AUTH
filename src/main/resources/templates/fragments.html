@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="kk" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${title} + ' · ДҮКЕН'">ДҮКЕН</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="icon" th:href="@{/img/shield.svg}" type="image/svg+xml">
+</head>
+<body>
+
+<header class="site-header" th:fragment="header">
+    <div class="container">
+        <a class="logo" th:href="@{/}">
+            <span class="logo-mark">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+            </span>
+            ДҮКЕН
+        </a>
+        <nav class="nav">
+            <th:block sec:authorize="isAnonymous()">
+                <a th:href="@{/login}">Кіру</a>
+                <a class="nav-cta" th:href="@{/register}">Тіркелу</a>
+            </th:block>
+            <th:block sec:authorize="isAuthenticated()">
+                <span class="nav-user" sec:authentication="name">user@mail.kz</span>
+                <a th:href="@{/account}">Кабинет</a>
+                <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin}">Әкімші панелі</a>
+                <form th:action="@{/logout}" method="post">
+                    <button type="submit">Шығу</button>
+                </form>
+            </th:block>
+        </nav>
+    </div>
+</header>
+
+<footer class="site-footer" th:fragment="footer">
+    <div class="container">
+        <span>© 2026 ДҮКЕН · Ainabek Togzhan, IS 24-09</span>
+        <span>Spring Boot · Spring Security · BCrypt</span>
+    </div>
+</footer>
+
+<div th:fragment="security-note" class="security-note">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    <span>Құпия сөзіңіз BCrypt арқылы хэштеліп сақталады. 5 рет қате енгізілсе, аккаунт 15 минутқа бұғатталады.</span>
+</div>
+
+<span th:fragment="result-badge(result)" th:switch="${result}">
+    <span th:case="'SUCCESS'" class="badge badge-ok">Сәтті кіру</span>
+    <span th:case="'REGISTERED'" class="badge badge-info">Тіркелді</span>
+    <span th:case="'BAD_CREDENTIALS'" class="badge badge-bad">Қате құпия сөз</span>
+    <span th:case="'LOCKED_NOW'" class="badge badge-warn">Бұғатталды</span>
+    <span th:case="'ACCOUNT_LOCKED'" class="badge badge-warn">Бұғатталған аккаунтқа әрекет</span>
+    <span th:case="*" class="badge badge-user" th:text="${result}">—</span>
+</span>
+
+</body>
+</html>

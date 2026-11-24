@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="kk" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Әкімші панелі')}"></head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+
+<main class="container">
+    <div class="page-head">
+        <div>
+            <h1>Әкімші панелі</h1>
+            <p>Пайдаланушыларды басқару және кіру журналы</p>
+        </div>
+    </div>
+
+    <div class="alert alert-ok" th:if="${message}" th:text="${message}" role="status">Хабар</div>
+
+    <div class="stats">
+        <div class="stat"><div class="label">Пайдаланушылар</div><div class="value" th:text="${totalUsers}">0</div></div>
+        <div class="stat warn"><div class="label">Бұғатталған аккаунттар</div><div class="value" th:text="${lockedUsers}">0</div></div>
+        <div class="stat danger"><div class="label">Сәтсіз кіру әрекеттері</div><div class="value" th:text="${failedAttempts}">0</div></div>
+    </div>
+
+    <section class="card">
+        <div class="card-head"><h2>Пайдаланушылар</h2><span th:text="${totalUsers} + ' аккаунт'">0</span></div>
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>ID</th><th>Email</th><th>Рөлі</th><th>Күйі</th><th>Тіркелген</th><th>Әрекеттер</th></tr></thead>
+                <tbody>
+                <tr th:each="u : ${users}">
+                    <td th:text="${u.id}">1</td>
+                    <td th:text="${u.email}">user@mail.kz</td>
+                    <td><span th:class="${u.role.name() == 'ADMIN'} ? 'badge badge-admin' : 'badge badge-user'" th:text="${u.role}">USER</span></td>
+                    <td>
+                        <span th:if="${u.isLocked(now)}" class="badge badge-warn"
+                              th:text="'Бұғатталған · ' + ${@fmt.time(u.lockedUntil)} + ' дейін'">Бұғатталған</span>
+                        <span th:unless="${u.isLocked(now)}" class="badge badge-ok"
+                              th:text="${u.failedAttempts > 0} ? 'Белсенді · қате: ' + ${u.failedAttempts} : 'Белсенді'">Белсенді</span>
+                    </td>
+                    <td th:text="${@fmt.time(u.createdAt)}">—</td>
+                    <td class="actions">
+                        <form th:if="${u.isLocked(now)}" th:action="@{/admin/users/{id}/unlock(id=${u.id})}" method="post">
+                            <button class="btn btn-sm btn-outline" type="submit">Бұғаттан шығару</button>
+                        </form>
+                        <form th:if="${u.role.name() != 'ADMIN'}" th:action="@{/admin/users/{id}/delete(id=${u.id})}" method="post">
+                            <button class="btn btn-sm btn-danger" type="submit">Жою</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="card">
+        <div class="card-head"><h2>Кіру журналы</h2><span>соңғы 100 жазба</span></div>
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Уақыт</th><th>Email</th><th>IP</th><th>Нәтиже</th></tr></thead>
+                <tbody>
+                <tr th:each="a : ${attempts}">
+                    <td th:text="${@fmt.time(a.createdAt)}">—</td>
+                    <td th:text="${a.email}">user@mail.kz</td>
+                    <td class="mono" th:text="${a.ipAddress}">127.0.0.1</td>
+                    <td><span th:replace="~{fragments :: result-badge(${a.result})}"></span></td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="empty" th:if="${#lists.isEmpty(attempts)}">Журнал бос</div>
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

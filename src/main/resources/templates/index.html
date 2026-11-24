@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="kk" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments :: head('Басты бет')}"></head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+
+<main>
+    <section class="hero">
+        <div class="container">
+            <div>
+                <span class="eyebrow">Онлайн дүкен · қауіпсіз аккаунт</span>
+                <h1>Сатып алушылар аккаунтын сенімді қорғайтын кіру жүйесі</h1>
+                <p>Тіркелу мен кіру Spring Security арқылы жүзеге асады: құпия сөздер BCrypt хэші түрінде сақталады,
+                    сәтсіз әрекеттер шектеледі, ал әрбір кіру журналға жазылады.</p>
+                <div class="hero-actions">
+                    <a sec:authorize="isAnonymous()" class="btn btn-primary" th:href="@{/register}">Аккаунт ашу</a>
+                    <a sec:authorize="isAnonymous()" class="btn btn-ghost" th:href="@{/login}">Жүйеге кіру</a>
+                    <a sec:authorize="isAuthenticated()" class="btn btn-primary" th:href="@{/account}">Жеке кабинетке өту</a>
+                </div>
+            </div>
+            <div class="hero-card" aria-label="Дерекқорда сақталатын мысал">
+                <div class="row"><span class="k">email</span><span>aruzhan@mail.kz</span></div>
+                <div class="row"><span class="k">password</span><span class="bad">Qwerty2026 ✗ сақталмайды</span></div>
+                <div class="row"><span class="k">hash</span><span class="hash">$2a$12$Xc9vO1kQe7mZr…3fL2</span></div>
+                <div class="row"><span class="k">salt</span><span>кездейсоқ, 16 байт</span></div>
+                <div class="row"><span class="k">rounds</span><span>2<sup>12</sup> = 4096</span></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="container grid-3">
+            <div class="feature">
+                <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+                <h3>BCrypt хэштеу</h3>
+                <p>Әр құпия сөзге жеке тұз (salt) қосылып, 4096 раунд хэштеледі. Дерекқор ұрланса да, құпия сөздер ашылмайды.</p>
+            </div>
+            <div class="feature">
+                <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg></div>
+                <h3>Brute-force қорғау</h3>
+                <p>Қатарынан 5 қате әрекеттен кейін аккаунт 15 минутқа бұғатталады — құпия сөзді теріп табу мүмкін емес.</p>
+            </div>
+            <div class="feature">
+                <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h5"/></svg></div>
+                <h3>Кіру журналы</h3>
+                <p>Әр әрекеттің уақыты, IP-мекенжайы және нәтижесі сақталады. Әкімші күдікті белсенділікті бірден көреді.</p>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

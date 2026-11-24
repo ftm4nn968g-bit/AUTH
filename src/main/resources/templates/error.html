@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="kk" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Қате')}"></head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+
+<main class="error-page">
+    <p class="code" th:text="${status}">404</p>
+    <h1 th:switch="${status}">
+        <span th:case="403">Қол жеткізу тыйым салынған</span>
+        <span th:case="404">Бет табылмады</span>
+        <span th:case="*">Бірдеңе дұрыс болмады</span>
+    </h1>
+    <!-- Қауіпсіздік: стек трейс пен ішкі қателер пайдаланушыға көрсетілмейді -->
+    <p>Басты бетке оралып, қайта көріңіз.</p>
+    <a class="btn btn-primary" th:href="@{/}">Басты бет</a>
+</main>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

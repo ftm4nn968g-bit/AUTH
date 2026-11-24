@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="kk" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Жеке кабинет')}"></head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+
+<main class="container">
+    <div class="page-head">
+        <div>
+            <h1>Жеке кабинет</h1>
+            <p>Қош келдіңіз, <strong th:text="${user.email}">user@mail.kz</strong></p>
+        </div>
+    </div>
+
+    <div class="two-col">
+        <section class="card">
+            <div class="card-head"><h2>Аккаунт</h2></div>
+            <div class="card-body">
+                <dl class="info-list">
+                    <dt>Email</dt><dd th:text="${user.email}">user@mail.kz</dd>
+                    <dt>Рөлі</dt>
+                    <dd><span th:class="${user.role.name() == 'ADMIN'} ? 'badge badge-admin' : 'badge badge-user'"
+                              th:text="${user.role.name() == 'ADMIN'} ? 'Әкімші' : 'Сатып алушы'">Сатып алушы</span></dd>
+                    <dt>Тіркелген күні</dt><dd th:text="${@fmt.time(user.createdAt)}">—</dd>
+                    <dt>Құпия сөз хэші</dt>
+                    <dd class="mono" th:text="${#strings.substring(user.password, 0, 7)} + '…' + ' (BCrypt)'">$2a$12$…</dd>
+                </dl>
+            </div>
+        </section>
+
+        <section class="card">
+            <div class="card-head"><h2>Соңғы кіру әрекеттері</h2><span>Бөгде әрекет көрсеңіз — құпия сөзді ауыстырыңыз</span></div>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Уақыт</th><th>IP</th><th>Нәтиже</th></tr></thead>
+                    <tbody>
+                    <tr th:each="a : ${attempts}">
+                        <td th:text="${@fmt.time(a.createdAt)}">—</td>
+                        <td class="mono" th:text="${a.ipAddress}">127.0.0.1</td>
+                        <td><span th:replace="~{fragments :: result-badge(${a.result})}"></span></td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="empty" th:if="${#lists.isEmpty(attempts)}">Әзірге әрекет жоқ</div>
+            </div>
+        </section>
+    </div>
+</main>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>
